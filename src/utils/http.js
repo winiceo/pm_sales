@@ -10,7 +10,7 @@ import {
 // 动态设置本地和线上接口域名
 
 
-axios.defaults.timeout = 5000; //5000的超时验证
+axios.defaults.timeout = 4000; //5000的超时验证
 
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=UTF-8';

@@ -65,8 +65,8 @@ export default {
     getUserInfo: ({commit}) => {
 
         return api.getUserInfo().then((data) => {
-
-            console.log(data)
+            commit(types.UPDATE_USERINFO,data)
+            //console.log(data)
             // cache.set('token',data.token)
             // cache.set('roles',data.role)
             // cache.set('name',data.username)
@@ -74,9 +74,9 @@ export default {
             // cache.set('team',data.team)
 
             //commit('SET_TOKEN', data.token)
-            commit('SET_ROLES', data.roles)
-            commit('SET_NAME', data.username)
-            commit('SET_AVATAR', data.avatar)
+            // commit('SET_ROLES', data.roles)
+            // commit('SET_NAME', data.username)
+            // commit('SET_AVATAR', data.avatar)
             return data;
 
 
@@ -98,8 +98,8 @@ export default {
 
     },
     logout: ({commit}) => {
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
+        // commit('SET_TOKEN', '')
+        // commit('SET_ROLES', [])
 
         return api.logout()
     }

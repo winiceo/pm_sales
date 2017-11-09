@@ -43,52 +43,77 @@
                     </el-col>
                 </el-row>
             </el-form-item>
-            <div style="margin-bottom: 10px;">
 
-            <el-tabs v-model="activeName" type="border-card" closable addable
-                                 @tab-add='addTab'
-                                 @tab-remove="removeTab">
-                            <el-tab-pane
-                                    v-for="(item, index) in selfForm.awardList"
-                                    :key="item.index"
-                                    :label="item.grade"
-                                    :name="item.index"
-                            >
-                                <el-form label-position="top" label-width="80px" >
-                                    <el-form-item label="奖项名称">
-                                        <el-input v-model="item.grade" :disabled="true"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="奖品名称">
-                                        <el-input v-model="item.title"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="奖品总数">
-                                        <el-input v-model="item.total"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="奖品剩余数量">
-                                        <el-input v-model="item.num"></el-input>
-                                    </el-form-item>
-                                    <el-form-item label="使用说明">
-                                        <div>
+            <el-form-item label="奖品有效期" prop="">
+                <el-row>
 
-                                                <quill-editor v-model="item.desc"
-                                                              ref="myQuillEditor"
-                                                              :options="getoptions(index)">
-                                                </quill-editor>
-
-                                            <!--<div class="quill-editor"-->
-                                                 <!--v-model="item.desc"-->
-                                                 <!--:id="item.id"-->
-                                                 <!--v-quill:myQuillEditor="{name:item.id}">-->
-                                                <!--<div></div>-->
-                                            <!--</div>-->
-                                        </div>
+                    <el-col :span="6">
+                        <el-input placeholder="7" :number="true" size="large" v-model="selfForm.awardLimitDate">
+                            <template slot="append">天</template>
+                        </el-input>
+                    </el-col>
+                    <el-col :span="6">
+                        中奖次日起{{selfForm.awardLimitDate}}天有效
+                    </el-col>
+                </el-row>
+            </el-form-item>
 
 
-                                    </el-form-item>
-                                </el-form>
 
-                            </el-tab-pane>
-                        </el-tabs>
+
+            <el-form-item label="活动奖品" required>
+                <el-tag
+                        v-for="tag in selfForm.awardList"
+                        :closable="true"
+
+                        v-bind:class="{active: tag.index==item.index,primary:tag.index!=item.index}"
+                        @click.native="showAward(tag);"
+                        @close="handleClose(tag)"
+                >
+                    {{tag.grade}}
+                </el-tag>
+                <el-button icon="plus" size="large" @click.native="showDialog"
+                           style="vertical-align: middle;margin: 10px;"></el-button>
+                <transition name="fade">
+                    <div class="el-form-item__error" v-show="tagsValid">{{ tagsError }}</div>
+                </transition>
+            </el-form-item>
+            <div style="margin-bottom: 10px;" v-show="item.grade">
+
+                <el-form label-position="top" label-width="80px">
+                    <el-form-item label="奖项名称">
+                        <el-input v-model="item.grade"  v-on:blur="check(item.grade)"></el-input>
+                    </el-form-item>
+                    <el-form-item label="奖品名称">
+                        <el-input v-model="item.title"></el-input>
+                    </el-form-item>
+                    <el-form-item label="奖品总数(供用户查看)">
+                        <el-input v-model="item.total"></el-input>
+                    </el-form-item>
+                    <el-form-item label="奖品剩余数量(真实奖品数量)">
+                        <el-input v-model="item.num"></el-input>
+                    </el-form-item>
+                    <el-form-item label="使用说明">
+                        <div>
+
+                            <quill-editor v-model="item.desc"
+                                          ref="myQuillEditor"
+                                          :options="getoptions()">
+                            </quill-editor>
+
+                            <!--<div class="quill-editor"-->
+                            <!--v-model="item.desc"-->
+                            <!--:id="item.id"-->
+                            <!--v-quill:myQuillEditor="{name:item.id}">-->
+                            <!--<div></div>-->
+                            <!--</div>-->
+                        </div>
+
+
+                    </el-form-item>
+                </el-form>
+
+
             </div>
             <!-- <el-button
                 size="small"
@@ -100,52 +125,93 @@
 
             <!--<el-form-item label="奖项设置" prop="" class="setSign">-->
 
-                <!--<el-row :gutter="20" v-for="item of selfForm.awardList">-->
-                    <!--<el-col :span="3">-->
-                        <!--<el-input v-model="item.grade" size="large"></el-input>-->
-                    <!--</el-col>-->
-                    <!--<el-col :span="4" class="title">-->
-                        <!--<el-input v-model="item.name" size="large" placeholder="奖品名称"></el-input>-->
-                    <!--</el-col>-->
-                    <!--<el-col :span="10">-->
-                        <!--<el-input v-model="item.num" placeholder="奖品数量"></el-input>-->
-                    <!--</el-col>-->
+            <!--<el-row :gutter="20" v-for="item of selfForm.awardList">-->
+            <!--<el-col :span="3">-->
+            <!--<el-input v-model="item.grade" size="large"></el-input>-->
+            <!--</el-col>-->
+            <!--<el-col :span="4" class="title">-->
+            <!--<el-input v-model="item.name" size="large" placeholder="奖品名称"></el-input>-->
+            <!--</el-col>-->
+            <!--<el-col :span="10">-->
+            <!--<el-input v-model="item.num" placeholder="奖品数量"></el-input>-->
+            <!--</el-col>-->
 
 
-                    <!--<el-button icon="delete" @click.native.prevent="removeItem(item)" title="删除"></el-button>-->
+            <!--<el-button icon="delete" @click.native.prevent="removeItem(item)" title="删除"></el-button>-->
 
-                    <!--<el-dropdown trigger="click" style="margin-left: 10px;color: #20a0ff;">-->
-                        <!--<el-button>-->
-                            <!--移动<i class="el-icon-caret-bottom el-icon-right"></i>-->
-                        <!--</el-button>-->
-                        <!--<el-dropdown-menu slot="dropdown">-->
-                            <!--<el-dropdown-item @click.native="moveTop(item)">置顶</el-dropdown-item>-->
-                            <!--<el-dropdown-item @click.native="moveUp(item)">上移</el-dropdown-item>-->
-                            <!--<el-dropdown-item @click.native="moveDown(item)">下移</el-dropdown-item>-->
-                        <!--</el-dropdown-menu>-->
-                    <!--</el-dropdown>-->
-                <!--</el-row>-->
+            <!--<el-dropdown trigger="click" style="margin-left: 10px;color: #20a0ff;">-->
+            <!--<el-button>-->
+            <!--移动<i class="el-icon-caret-bottom el-icon-right"></i>-->
+            <!--</el-button>-->
+            <!--<el-dropdown-menu slot="dropdown">-->
+            <!--<el-dropdown-item @click.native="moveTop(item)">置顶</el-dropdown-item>-->
+            <!--<el-dropdown-item @click.native="moveUp(item)">上移</el-dropdown-item>-->
+            <!--<el-dropdown-item @click.native="moveDown(item)">下移</el-dropdown-item>-->
+            <!--</el-dropdown-menu>-->
+            <!--</el-dropdown>-->
+            <!--</el-row>-->
 
-                <!--<el-row>-->
-                    <!--<el-col :span="14" :offset="5">-->
-                        <!--<el-button :span="24" type="primary" size="large" @click.native="addItem">添加更多</el-button>-->
-                    <!--</el-col>-->
-                <!--</el-row>-->
+            <!--<el-row>-->
+            <!--<el-col :span="14" :offset="5">-->
+            <!--<el-button :span="24" type="primary" size="large" @click.native="addItem">添加更多</el-button>-->
+            <!--</el-col>-->
+            <!--</el-row>-->
             <!--</el-form-item>-->
 
 
         </el-form>
-
+        <!-- 弹框 -->
+        <el-dialog title="添加活动奖品" v-model="dialogFormVisible" top="35%">
+            <el-form :model="dialogForm">
+                <el-form-item>
+                    <el-input v-model="dialogForm.grade" auto-complete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click.native="dialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click.native="handleAdd(dialogForm.grade)">添加</el-button>
+                </span>
+        </el-dialog>
 
     </div>
 </template>
 
-<style  >
+<style>
     .ql-container .ql-editor {
         min-height: 10em;
         padding-bottom: 1em;
         max-height: 15em;
     }
+
+    .step2 .primary {
+        background-color: rgba(26, 32, 25, 0.13);
+        border-color: rgba(61, 79, 93, 0.2);
+        color: #151f20;
+    }
+
+
+    .step2 .active {
+        background-color: rgba(68, 68, 68, 0.82);
+        border-color: rgba(61, 79, 93, 0.2);
+        color: #fcfeff;
+    }
+
+    .step2 .el-tag {
+        padding: 10px 20px;
+        margin: 5px;
+        vertical-align: middle;
+        height: auto;
+    }
+
+    .step2 .el-tag:first-child {
+        margin-left: 0;
+    }
+
+    .step2 .el-tag .el-icon-close {
+        right: -20px;
+    }
+
+
     .el-tabs__new-tab {
         float: right;
         border: 1px solid #18bc9c;
@@ -195,7 +261,7 @@
 
 </style>
 <script>
-    import { quillEditor } from 'vue-quill-editor'
+    import {quillEditor} from 'vue-quill-editor'
     import Cache from 'utils/store'
     import * as http from 'utils/http'
     import _ from 'lodash'
@@ -207,12 +273,19 @@
         },
         data: function () {
             return {
-                activeName:"1",
-                imgUrl: '',
-                editorOption:{},
-                selfForm: {
 
-                }
+                item: {
+
+                },
+                tagsValid: false,
+                tagsError: '请设置奖品',
+                dialogForm: {grade: ''},
+                dialogFormVisible: false,
+                dialogFormFenLeiVisible: false,
+                activeName: "一等奖",
+                imgUrl: '',
+                editorOption: {},
+                selfForm: {}
             }
         },
         watch: {
@@ -221,45 +294,103 @@
                 handler: function (val, oldVal) {
 //                    this.$store.dispatch('setSelfForm', this.selfForm)
 //                    this.selfFormChange = true;
-                  Cache.set('selfForm',this.selfForm)
+                  //  alert(this.selfForm.awardLimitDate)
+                    console.log(this.selfForm.awardLimitDate)
+                    Cache.set('selfForm', this.selfForm)
                 },
                 deep: true
             },
 
+
         },
         methods: {
-            getoptions(i){
+            check(tag){
+
+                var tags=this.selfForm.awardList
+                var isExist = false;
+                tag = tag.trim();
+
+                for (var i = 0; i < tags.length; i++) {
+                    console.log([tags[i].index ,this.item.index])
+                    if (tags[i].grade == tag&&tags[i].index!=this.item.index) {
+                        isExist = true;
+                        break
+                    }
+                }
+                if (isExist) {
+                    this.$message({
+                        message: '该奖项已存在',
+                        type: 'warning'
+                    });
+                }
+            },
+            showAward(award) {
+                this.item = award;
+               // alert(JSON.stringify(award))
+                var index = this.selfForm.awardList.indexOf(award);
+
+                this.selfForm.awardList.forEach((item, i)=>
+                {
+
+                   if(i!=index){
+                       console.log(item)
+                       //item.isSeclected=false;
+                   }else{
+                      // item.isSeclected=true;
+                   }
+                });
+                //
+
+            },
+//            check(grade) {
+//                var isExsit = _.findIndex(this.selfForm.awardList, function (chr) {
+//                    return chr.grade == grade;
+//                });
+//                if (isExsit != -1) {
+//                    grade = grade + "一"
+//                }
+//                return grade
+//            },
+            getoptions(i) {
                 var toolbarOptions = ['bold', 'italic', 'underline', 'strike'];
 
-                return  {
+                return {
                     modules: {
                         toolbar: toolbarOptions
                     }
                 }
             },
-            addTab() {
-
-                var o = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]
-                var n = this.selfForm.awardList ? this.selfForm.awardList.length : 0;
-                if (n >= 8) {
-                    this.$message.error('最多添加8个奖品');
-                    return
-                }
-                this.selfForm.awardList.push({
-                    index:(n+1)+'',
-                    grade: o[n] + '等奖',
-                    title: '奖品名称',
-                    num: 0,
-                    total:0,
-                    desc:''
-                });
-                this.activeName=(n+1)+'';
-            },
+//            addTab() {
+//
+//                var o = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]
+//                var n = this.selfForm.awardList ? this.selfForm.awardList.length : 0;
+//                if (n >= 8) {
+//                    this.$message.error('最多添加8个奖品');
+//                    return
+//                }
+//                var grade = o[n] + '等奖';
+//                var isExsit = _.findIndex(this.selfForm.awardList, function (chr) {
+//                    return chr.grade == grade;
+//                });
+//                if (isExsit != -1) {
+//                    grade = grade + "一"
+//                }
+//                this.selfForm.awardList.push({
+//
+//                    grade: grade,
+//                    title: '奖品名称',
+//                    num: 0,
+//                    total: 0,
+//                    desc: ''
+//                });
+//                this.activeName = grade;
+//            },
             removeTab(targetName) {
+                console.log(targetName)
 
                 let tabs = this.selfForm.awardList;
-                var vm=this;
-                if(tabs.length<=1){
+                var vm = this;
+                if (tabs.length <= 1) {
                     this.$message.error('必须有一个奖品');
                     return
                 }
@@ -267,95 +398,134 @@
                 if (this.activeName === targetName) {
 
                     tabs.forEach((tab, index) => {
-                        if (tab.index === targetName) {
+                        if (tab.grade === targetName) {
                             let nextTab = tabs[index + 1] || tabs[index - 1];
                             if (nextTab) {
 
-                                this.activeName = nextTab.index;
+                                this.activeName = nextTab.grade;
                             }
                         }
                     });
                 }
 
 
-                this.selfForm.awardList=tabs.filter(tab => tab.index !== targetName);
-                var index=_.findIndex(tabs, function(chr) {
-                    return chr.index == targetName;
+                this.selfForm.awardList = tabs.filter(tab => tab.grade !== targetName);
+                var index = _.findIndex(tabs, function (chr) {
+                    return chr.grade == targetName;
                 });
-                if(tabs[index]){
-                    if(tabs[index].objectId){
-                        http.post('/award/delete/'+tabs[index].objectId)
+                if (tabs[index]) {
+                    if (tabs[index].objectId) {
+                        http.post('/award/delete/' + tabs[index].objectId)
                     }
                 }
 
 
             },
-            onSubmit: function () {
-                console.log('submit!');
+            showDialog: function () {
+                if (this.selfForm.awardList.length >= 8) {
+                    this.$message({
+                        message: '最多设置8个奖品',
+                        type: 'warning'
+                    });
+                } else {
+                    this.dialogFormVisible = true;
+                    this.dialogForm = {};
+                }
             },
-            addItem: function () {
-                var o = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]
-                var n = this.selfForm.awardList ? this.selfForm.awardList.length : 0;
-                this.selfForm.awardList.push({
-                    grade: o[n] + '等奖',
-                    name: '奖品名称',
-                    num: 0
+            handleClose: function (tag) {
+                let tabs = this.selfForm.awardList;
+                let vm=this;
+                if (tabs.length <= 1) {
+                    this.$message.error('必须有一个奖品');
+                    return
+                }
+                var index = this.selfForm.awardList.indexOf(tag);
 
-                });
-            },
-            removeItem: function (item) {
-                var index = this.selfForm.awardList.indexOf(item);
-                this.selfForm.awardList.splice(index, 1);
-            },
+                var item=this.selfForm.awardList.splice(index, 1);
 
-            moveTop: function (item) {
-                var index = this.selfForm.awardList.indexOf(item);
-                if (index != 0) {
-                    this.selfForm.awardList.splice(index, 1);
-                    this.selfForm.awardList.splice(0, 0, item);
+                if(index==this.selfForm.awardList.length){
+
+                         setTimeout(function() {
+                             vm.item = vm.selfForm.awardList[vm.selfForm.awardList.length - 1]
+                         },10)
+
+
+                   // this.showAward(this.selfForm.awardList[this.selfForm.awardList.length-1])
+
+                }
+
+            },
+            handleAdd: function (tag) {
+                var tags=this.selfForm.awardList;
+
+                var index=1;
+                if(tags.length>=1){
+                   index= _.sortBy(tags, 'index')[tags.length-1].index
+
+                }
+                index++;
+
+                if (tag && tag.trim().length !== 0) {
+                    var isExist = false;
+                    tag = tag.trim();
+                    for (var i = 0; i < tags.length; i++) {
+                        if (tags[i].grade == tag) {
+                            isExist = true;
+                            break
+                        }
+                    }
+                    if (isExist) {
+                        this.$message({
+                            message: '该奖项已存在',
+                            type: 'warning'
+                        });
+                    } else {
+                        this.dialogFormVisible = false;
+                        this.dialogFormFenLeiVisible = false;
+
+                       var item={
+                            index: index,
+                            grade: tag,
+                            title: '奖品名称',
+                            num: 0,
+                            total: 0,
+                            desc: ''
+                        }
+                        tags.push(item);
+                        this.item=item;
+                    }
+                } else {
+                    this.$message({
+                        message: '奖项不能为空',
+                        type: 'warning'
+                    });
                 }
             },
-            moveUp: function (item) {
-                var index = this.selfForm.awardList.indexOf(item);
-                if (index != 0) {
-                    this.selfForm.awardList.splice(index, 1);
-                    this.selfForm.awardList.splice(index - 1, 0, item);
-                }
-            },
-            moveDown: function (item) {
-                var index = this.selfForm.awardList.indexOf(item);
-                var max = this.selfForm.awardList.length;
-                if (index != max) {
-                    this.selfForm.awardList.splice(index, 1);
-                    this.selfForm.awardList.splice(index + 1, 0, item);
-                }
-            },
-            createQRcode: function () {
-                console.log('生成二维码');
-                this.$notify.info({
-                    title: '消息',
-                    message: '该功能正在完善中'
-                });
-            }
         },
         created: function () {
-            var vm=this;
+            var vm = this;
             var item = Cache.get('selfForm')
-            this.selfForm=item;
-            //alert(JSON.stringify(item))
+            this.selfForm = item;
+            console.log(this.selfForm.awardLimitDate)
+           // console.log(JSON.stringify(item))
             var objectId = this.$route.params.id;
             if (objectId !== "0") {
-                this.selfForm=item;
-//                this.$store.dispatch('getActivityByObjectId', objectId).then((data) => {
+                this.selfForm = item;
+                setTimeout(function() {
+                    vm.item = vm.selfForm.awardList[0]
+                },10)
 //
-//                    Object.assign(vm.selfForm, data);
-//                }).catch(() => {
-//                })
             } else {
-                 this.selfForm=item;
-                 if(!item.awardList||item.awardList.length==0){
-                     vm.addTab();
-                 }
+                this.selfForm = item;
+                //alert(this.selfForm.awardList.length)
+                if (!this.selfForm.awardList || this.selfForm.awardList.length == 0) {
+
+                    vm.handleAdd('一等奖');
+                }else{
+                    setTimeout(function() {
+                        vm.item = vm.selfForm.awardList[0]
+                    },10)
+                }
 
 
             }

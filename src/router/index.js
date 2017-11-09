@@ -54,29 +54,29 @@ export const constantRouterMap = [
                     {
                         path: 'edit/:id',
                         alias: '',
-                        name: '33',
+                        name: '编辑活动',
                         title: '编辑活动',
                         hidden: true,
                         component: () => import('@/views/activity/edit.vue'),
                         children: [
                             {
                                 path: 'step/1',
-                                name: 'edit_step1',
-                                title: '基本信息',
+                                name: '基本信息',
+                                title: 'edit_step1',
                                 component:  () => import('@/views/activity/step1.vue'),
                                 hidden: true
                             },
                             {
                                 path: 'step/2',
-                                name: 'edit_step2',
-                                title: '奖品设定',
+                                name: '奖品设定',
+                                title: 'edit_step2',
                                 component: _import('activity/step2'),
                                 hidden: true
                             },
                             {
                                 path: 'step/3',
-                                name: 'edit_step3',
-                                title: '分享设置',
+                                name: '分享设置',
+                                title: 'edit_step3',
                                 component: _import('activity/step3'),
                                 hidden: true
                             },

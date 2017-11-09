@@ -9,13 +9,17 @@
 
 
             <el-form-item label="活动时间" required style="width: 750px;">
-                <el-date-picker size="large" style="width: 400px;"
-                                v-model="activityDateRanage"
-                                type="datetimerange"
 
-
-                                placeholder="选择时间范围">
+                <el-date-picker
+                        v-model="selfForm.startTimeData"
+                        type="datetime"
+                        placeholder="选择日期时间">
+                </el-date-picker>-<el-date-picker
+                        v-model="selfForm.endTimeData"
+                        type="datetime"
+                        placeholder="选择日期时间">
                 </el-date-picker>
+
 
             </el-form-item>
 
@@ -90,6 +94,20 @@
                 </el-row>
             </el-form-item>
 
+             <el-form-item label="抽奖次数" prop="">
+                <el-row>
+
+                    <el-col :span="6">
+                        <el-input placeholder="0" :number="true" size="large" v-model="selfForm.lotteryNum">
+                            <template slot="append">次</template>
+                        </el-input>
+                    </el-col>
+                    <el-col :span="6">
+                        每人每天可抽奖({{selfForm.lotteryNum}})次数
+                    </el-col>
+                </el-row>
+            </el-form-item>
+
             <el-form-item label="活动说明">
                 <quill-editor v-model="selfForm.activeDescribe"
                               ref="myQuillEditor"
@@ -136,7 +154,10 @@
     </div>
 </template>
 
-<style lang="stylus" scoped>
+<style lang="stylus"  >
+    .ql-editor{
+         height: 200px;
+    }
     .ql-toolbar.ql-snow + .ql-container.ql-snow {
         border-top: 0px;
         height: 200px;
@@ -274,7 +295,7 @@
                     endTimeDate: [{required: true, message: '请选择活动结束日期', trigger: 'change'}],
 
                 },
-                activityDateRanage: [new Date(), new Date()],
+//                activityDateRanage: [new Date(), new Date()],
                 selfForm: {
                     name: '',
                     cate: 'dzp',
@@ -286,10 +307,12 @@
                     numLimit: '无限制',
                     gameMostPrize: '',
                     gameRate: '50',
+                    lotteryNum:'3',
                     awardList: [],
                     title: '',
                     describe: '',
-                    shareImg:''
+                    shareImg:'',
+                    awardLimitDate:7
 
                 }
             };
@@ -306,14 +329,14 @@
                 },
                 deep: true
             },
-            activityDateRanage: {
-                handler: function (val, oldVal) {
-                    this.selfForm.startTimeData = val[0]
-                    this.selfForm.endTimeData = val[1]
-                    console.log(this.selfForm)
-
-                }
-            },
+//            activityDateRanage: {
+//                handler: function (val, oldVal) {
+//                    this.selfForm.startTimeData = val[0]
+//                    this.selfForm.endTimeData = val[1]
+//                    console.log(this.selfForm)
+//
+//                }
+//            },
             computed: {
                 editor() {
                     return this.$refs.myQuillEditor.quill
@@ -471,9 +494,12 @@
                 this.$store.dispatch('getActivityByObjectId', objectId).then((data) => {
 
                     Object.assign(vm.selfForm, data);
+
+                    //vm.activityDateRanage= [data.startTimeData ,data.endTimeData]
                 }).catch(() => {
                 })
             } else {
+                //vm.activityDateRanage= [new Date(), new Date()]
                 Object.assign(vm.selfForm, item);
             }
 

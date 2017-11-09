@@ -104,7 +104,7 @@ export default {
 						fn       : data => {
 
 
-                            this.$store.dispatch('save_user', data)
+                            //this.$store.dispatch('save_user', data)
 							//登录成功之后，验证是否记住密码，如果记住密码，本地保存记住信息
 							//如果没有记住，就初始化本地记住信息
 							if (this.remumber.remumber_flag === true) {

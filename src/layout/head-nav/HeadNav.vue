@@ -9,6 +9,7 @@
                 <el-col :span="16">
                     <el-menu theme="dark" :default-active="$store.state.router.headerCurRouter" class="el-menu-demo"
                              mode="horizontal" unique-opened router>
+                        <el-menu-item  > <a href="http://ds.lyzhtech.com/manage/?c=site&a=entry&op=display&do=stores2&m=leven_ds" target="_blank">返回商家系统</a></el-menu-item>
                         <!-- v-if='!item.hidden && (($store.state.user.userinfo.access_status===1 && $store.state.user.userinfo.web_routers[item.path]) || $store.state.user.userinfo.access_status!==1)' -->
                         <el-menu-item
                                 v-for='(item,index) in $router.options.routes'

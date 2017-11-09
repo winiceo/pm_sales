@@ -25,6 +25,7 @@ export default {
 		state.remumber.remumber_login_info = user_db.remumber_login_info;
 
 		store.set('remumber_flag', state.remumber.remumber_flag);
+		//alert(JSON.stringify(state.remumber.remumber_login_info));
 		store.set('remumber_login_info', state.remumber.remumber_login_info);
 	},
 

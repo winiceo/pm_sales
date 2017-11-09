@@ -47,8 +47,8 @@
             handleNextStep: function () {
                 //console.log('/app/dzp/create/step'+(this.step+1));
                 //this.$router.push({name: 'create_setp'+(this.step+1)});
-                this.$router.push({name: 'edit_step'+(this.step+1)})
-
+                this.$router.push({path: ''+(this.step+1)})
+                console.log(this.step)
                 var _this = this;
                 setTimeout(function () {
                     if(_this.isRouter){
@@ -63,7 +63,7 @@
                 var vm=this;
                 this.$store.dispatch('saveActivity').then(() => {
                     //vm.$store.dispath('clearActivity')
-                     this.$router.push({path: '/activity/index'})
+                     this.$router.push({path: '/hd/activity/index'})
                      vm.showDialog = true
                 }).catch((e) => {
                     vm.$message({

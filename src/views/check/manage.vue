@@ -53,7 +53,7 @@
         },
         mounted() {
            // alert(this.$store.state.user.userinfo.team)
-            var joinCheckManageUrl = 'http://' + window.location.host + '/check/manage/join/' + this.$store.state.user.userinfo.team
+            var joinCheckManageUrl = 'http://' + window.location.host + '/pm/check/manage/join/' + this.$store.state.user.userinfo.team
             this.url = joinCheckManageUrl
             var canvas = document.getElementById('canvas')
             QRCode.toCanvas(canvas, joinCheckManageUrl, (err) => {

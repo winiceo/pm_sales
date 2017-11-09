@@ -9,6 +9,7 @@ const selfForm = {
     name: ' ',
     cate: 'dzp',
     activePerson: '无限制',
+    awardLimitDate:'7',
     startTimeData: new Date(),
     endTimeData: new Date(),
     activePersonNum: '',
@@ -17,6 +18,7 @@ const selfForm = {
     gameMostPrize: '',
     gameRate: '5',
     awardList: [],
+
 }
 
 /* 活动管理测试数据 */

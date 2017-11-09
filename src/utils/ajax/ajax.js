@@ -13,6 +13,7 @@ import {
 
 // 动态设置本地和线上接口域名
 Vue.axios.defaults.baseURL = gbs.host;
+Vue.axios.defaults.timeout = 4000;
 
 /**
  * 封装axios的通用请求

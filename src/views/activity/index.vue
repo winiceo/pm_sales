@@ -44,22 +44,24 @@
 
       <el-table-column align="center" label="打开数" width="95">
         <template scope="scope">
-          <span class="link-type" @click='handleFetchPv(scope.row.pageviews)'>333{{scope.row.pageviews}}</span>
+          <span class="link-type"> {{scope.row.pageviews}}</span>
         </template>
       </el-table-column>
 
       <el-table-column class-name="status-col" label="状态" width="90">
         <template scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status}}</el-tag>
+          <el-tag :type="scope.row.status | statusFilter">{{scope.row.status|statusText}}</el-tag>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="操作" width="280">
         <template scope="scope">
-          <el-button   size="small" type="success" @click="showPreView(scope.row)">预览
+          <el-button   size="small"   @click="showPreView(scope.row)">预览
           </el-button>
 
           <el-button v-if="scope.row.status!='published'" size="small" type="success" @click="handleModifyStatus(scope.row,'published')">发布
+          </el-button>
+          <el-button v-if="scope.row.status=='published'" size="small" @click="handleModifyStatus(scope.row,'draft')">停止
           </el-button>
           <el-button v-if="scope.row.status!='published'" size="small" @click="update(scope.row)">编辑
           </el-button>
@@ -170,7 +172,7 @@
                 listQuery: {
                     cate:'dzp',
                     page: 1,
-                    limit: 20,
+                    limit: 10,
                     importance: undefined,
                     title: undefined,
                     type: undefined,
@@ -207,6 +209,14 @@
                     published: 'success',
                     draft: 'gray',
                     deleted: 'danger'
+                }
+                return statusMap[status]
+            },
+            statusText(status) {
+                const statusMap = {
+                    published: '发布',
+                    draft: '草稿',
+                    deleted: '删除'
                 }
                 return statusMap[status]
             },
@@ -252,11 +262,16 @@
                 this.listQuery.end = parseInt((+time[1] + 3600 * 1000 * 24) / 1000)
             },
             handleModifyStatus(row, status) {
-                this.$message({
-                    message: '操作成功',
-                    type: 'success'
+
+                var vm=this;
+                http.post('/activity/status/'+row.objectId,{status:status}).then(function(){
+                    vm.$message({
+                        message: '操作成功',
+                        type: 'success'
+                    })
+                    row.status = status
                 })
-                row.status = status
+
             },
             handleCreate() {
                 this.resetTemp()
@@ -276,7 +291,7 @@
                     type: 'warning'
                 }).then(() => {
                     const index = vm.list.indexOf(row)
-                    http.post('/activity/delete/'+row.objectId).then(function(){
+                    http.post('/activity/status/'+row.objectId,{status:'deleted'}).then(function(){
                         vm.list.splice(index, 1)
 
                         this.$message({

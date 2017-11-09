@@ -17,15 +17,29 @@
 		},
         methods:{
 			init(){
+			    var query=this.$route.query
+			    var username=query.username;
+			    var token=query.token;
 
+                this.$store.dispatch('update_remumber', {
+                    remumber_flag      : false,
+                    remumber_login_info: {
+                        username: username,
+                        token   :  token
+                    }
+                });
             },
         },
         mounted(){
-			this.init();
+
+            var q = this.$route.query.q
+            //var token=this.$route.query.token;
+             console.log (q)
+			//this.init();
         },
         watch:{
         	$route(to,from){
-
+               this.init()
             }
         }
 	}
